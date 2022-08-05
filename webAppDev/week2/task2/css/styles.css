@@ -1,0 +1,11 @@
+#post {
+    border-color: black;
+    border-style: solid;
+    margin: 50px;
+    padding: 20px;
+}
+
+#content {
+    width: 800px;
+    margin: auto;
+}
