@@ -7,7 +7,7 @@ class Project {
 
   /* Gets all projects */
   function get_projects() {
-    $sql = "SELECT P.id, P.title, C.company_name, (SELECT COUNT(*) FROM Application AS A WHERE A.project_id = P.id) AS 'application_no'
+    $sql = "SELECT P.id, P.title, C.company_name, P.available_slot, (SELECT COUNT(*) FROM Application AS A WHERE A.project_id = P.id) AS 'application_no'
             FROM Project AS P, Company AS C
             WHERE P.company_id = C.id";
     $items = DB::select($sql);
@@ -59,6 +59,13 @@ class Project {
   /* Gets all applications of a specific project */
   function get_project_applications($id) {
     $sql = "SELECT * FROM Project AS P, Application AS A WHERE A.project_id = P.id and P.id = ?;";
+    $items = DB::select($sql, array($id));
+    return $items;
+  }
+
+  /* Gets existing project assignment */
+  function get_project_assignments($id) {
+    $sql = "SELECT * FROM Project AS P, Assignment AS A WHERE A.project_id = P.id and P.id = ?;";
     $items = DB::select($sql, array($id));
     return $items;
   }

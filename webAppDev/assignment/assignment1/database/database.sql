@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Application;
+DROP TABLE IF EXISTS Assignment;
 DROP TABLE IF EXISTS Project;
 DROP TABLE IF EXISTS Company;
 DROP TABLE IF EXISTS Student;
@@ -36,6 +37,14 @@ CREATE TABLE IF NOT EXISTS Application (
 	FOREIGN KEY (student_id) REFERENCES Student(id)
 );
 
+CREATE TABLE IF NOT EXISTS Assignment (
+	id	 				INTEGER PRIMARY KEY AUTOINCREMENT,
+	project_id	 	 	INTEGER NOT NULL,
+	student_id 			INTEGER NOT NULL,
+	FOREIGN KEY (project_id) REFERENCES Project(id),
+	FOREIGN KEY (student_id) REFERENCES Student(id)
+);
+
 /** Populate sample values **/
 INSERT INTO Company (id, company_name, location) VALUES
 (NULL, 'Company One', 'Address One'),
@@ -49,7 +58,11 @@ INSERT INTO Student (id, first_name, last_name) VALUES
 (NULL, 'Student', 'Two'),
 (NULL, 'Student', 'Three'),
 (NULL, 'Student', 'Four'),
-(NULL, 'Student', 'Five');
+(NULL, 'Student', 'Five'),
+(NULL, 'Student', 'Six'),
+(NULL, 'Student', 'Seven'),
+(NULL, 'Student', 'Eight'),
+(NULL, 'Student', 'Nine');
 
 INSERT INTO Project (id, company_id, title, related_major, description, available_slot) VALUES
 (NULL, 1, 'Project One', 'software development', 'This is a test description', 5),
@@ -74,9 +87,21 @@ INSERT INTO Application (id, project_id, student_id, justification, priority) VA
 (NULL, 1, 4, 'This is a test justification', 1),
 (NULL, 5, 4, 'This is a test justification', 2),
 (NULL, 6, 4, 'This is a test justification', 3),
-(NULL, 1, 5, 'This is a test justification', 1),
+(NULL, 2, 5, 'This is a test justification', 1),
 (NULL, 7, 5, 'This is a test justification', 2),
-(NULL, 8, 5, 'This is a test justification', 3);
+(NULL, 8, 5, 'This is a test justification', 3),
+(NULL, 1, 6, 'This is a test justification', 1),
+(NULL, 2, 6, 'This is a test justification', 2),
+(NULL, 3, 6, 'This is a test justification', 3),
+(NULL, 3, 7, 'This is a test justification', 1),
+(NULL, 2, 7, 'This is a test justification', 2),
+(NULL, 1, 7, 'This is a test justification', 3),
+(NULL, 1, 8, 'This is a test justification', 1),
+(NULL, 3, 8, 'This is a test justification', 2),
+(NULL, 4, 8, 'This is a test justification', 3),
+(NULL, 1, 9, 'This is a test justification', 1),
+(NULL, 3, 9, 'This is a test justification', 2),
+(NULL, 4, 9, 'This is a test justification', 3);
 
 /* Sample query to test insertion worked. */
 SELECT

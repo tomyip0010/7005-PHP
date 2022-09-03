@@ -30,10 +30,31 @@ class Student {
     return $id;
   }
 
+  /* Get all applications of specified student */
   function get_student_applications($studetnId) {
-    $sql = "SELECT * FROM Application AS A, Student AS S WHERE A.student_id = S.id AND S.id = ?";
+    $sql = "SELECT * FROM Application AS A, Student AS S, Project AS P, Company AS C WHERE A.student_id = S.id AND A.project_id = P.id AND P.company_id = C.id AND S.id = ? ORDER BY A.priority ASC";
     $items = DB::select($sql, array($studetnId));
     return $items;
+  }
+
+  /* Gets all students */
+  function get_students() {
+    $sql = "SELECT * FROM Student AS S";
+    $items = DB::select($sql);
+    return $items;
+  }
+
+  /* Get student with the given id */
+  function get_student($id) {
+    $sql = "SELECT * FROM Student AS S WHERE S.id = ?";
+    $items = DB::select($sql, array($id));
+    // If we get more than one item or no items display an error
+    if (count($items) != 1) {
+        die("Invalid query or result: $sql\n");
+    }
+    // Extract the first item (which should be the only item)
+    $item = $items[0];
+    return $item;
   }
 }
 

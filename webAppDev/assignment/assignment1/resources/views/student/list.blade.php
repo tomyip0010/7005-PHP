@@ -1,14 +1,14 @@
 @extends('layouts.master')
 
 @section('title')
-  Dashboard
+  Students List
 @endsection
 
 @section('content')
   <!-- Table -->
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-      <h6 class="m-0 font-weight-bold text-primary">Industry Project Leaderboard</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Students List</h6>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -16,16 +16,16 @@
           <thead>
             <tr>
               <th>ID</th>
-              <th>Company</th>
-              <th>Total Projects</th>
+              <th>First Name</th>
+              <th>Last Name</th>
             </tr>
           </thead>
           <tbody>
-            @forelse($companies as $company)
-              <tr>
-                <td>{{ $company -> id }}</td>
-                <td>{{ $company -> company_name }}</td>
-                <td>{{ $company -> project_no }}</td>
+            @forelse($students as $student)
+              <tr class="row-clickable" data-path="{{url('student/detail/'.$student -> id) }}">
+                <td>{{ $student -> id }}</td>
+                <td>{{ $student -> first_name }}</td>
+                <td>{{ $student -> last_name }}</td>
               </tr>
             @empty
               <tr>

@@ -19,11 +19,25 @@
 		</a>
 	</li>
 
-	<!-- Nav Item - Dashboard -->
+	<!-- Nav Item - Industry Partner -->
 	<li class="nav-item">
-		<a class="nav-link" href="{{url('dashboard')}}">
+		<a class="nav-link" href="{{url('companies')}}">
 			<i class="fas fa-fw fa-tachometer-alt"></i>
-			<span>Dashboard</span></a>
+			<span>Industry Partner</span></a>
+	</li>
+
+	<!-- Nav Item - Students list -->
+	<li class="nav-item">
+		<a class="nav-link" href="{{url('students')}}">
+			<i class="fas fa-fw fa-tachometer-alt"></i>
+			<span>Student Lists</span></a>
+	</li>
+	
+	<!-- Nav Item - Project Assignment -->
+	<li class="nav-item">
+		<a class="nav-link" href="{{url('project/assignment')}}">
+			<i class="fas fa-fw fa-tachometer-alt"></i>
+			<span>Project Assignment</span></a>
 	</li>
 
 	<div class="sidebar-card d-none d-lg-flex">

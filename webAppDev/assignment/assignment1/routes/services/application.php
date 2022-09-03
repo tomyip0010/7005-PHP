@@ -26,6 +26,7 @@ class Application {
     return $item;
   }
 
+  /* Get existing application of specific student on specific project */
   function check_application_duplication($projectId, $studentId) {
     $sql = "SELECT * FROM Application AS A WHERE A.project_id = ? AND  A.student_id = ?";
     $items = DB::select($sql, array($projectId, $studentId));
