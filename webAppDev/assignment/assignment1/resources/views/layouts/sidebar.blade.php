@@ -21,14 +21,14 @@
 
 	<!-- Nav Item - Dashboard -->
 	<li class="nav-item">
-		<a class="nav-link" href="index.html">
+		<a class="nav-link" href="{{url('dashboard')}}">
 			<i class="fas fa-fw fa-tachometer-alt"></i>
 			<span>Dashboard</span></a>
 	</li>
 
 	<div class="sidebar-card d-none d-lg-flex">
-		<a href="{{url('/project/advertise')}}" class="btn btn-success">
-			<span class="text">Advertise Project</span>
+		<a href="{{url('requirement')}}" class="btn btn-success">
+			<span class="text">Requirement Doc</span>
 		</a>
 	</div>
 </ul>

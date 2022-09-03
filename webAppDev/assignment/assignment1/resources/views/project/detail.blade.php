@@ -4,10 +4,6 @@
   Detail
 @endsection
 
-@php
-  $projectId = $project -> id;
-@endphp
-
 @section('content')
   <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -60,21 +56,23 @@
           <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Student ID</th>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Priority</th>
               </tr>
             </thead>
             <tbody>
               @forelse($students as $student)
-                <tr>
+                <tr class="row-clickable" data-path="{{url('application/'.$student -> applicationId) }}">
                   <td>{{ $student -> id }}</td>
                   <td>{{ $student -> first_name }}</td>
                   <td>{{ $student -> last_name }}</td>
+                  <td>{{ $student -> priority }}</td>
                 </tr>
               @empty
                 <tr>
-                  <td colspan=3>
+                  <td colspan=4>
                     No results found.
                   </td>
                 </tr>
@@ -88,7 +86,7 @@
 @endsection
 
 @section('styles')
-  <link href="{{asset('css/detail.css')}}" type="text/css" rel="stylesheet">
+  <link href="{{asset('css/common.css')}}" type="text/css" rel="stylesheet">
 @endsection
 
 @section('scripts')

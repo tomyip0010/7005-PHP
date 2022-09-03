@@ -1,7 +1,13 @@
 <?php
 
 use wp\Project;
-require 'project.php';
+use wp\Student;
+use wp\Application;
+use wp\Company;
+require 'services/project.php';
+require 'services/student.php';
+require 'services/company.php';
+require 'services/application.php';
 
 use Illuminate\Support\Facades\Route;
 /*
@@ -14,58 +20,46 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-/* Find company with company_name */
-function find_company($company_name) {
-    $sql = "SELECT * FROM Company AS C WHERE C.company_name = ?";
-    $items = DB::select($sql, array($company_name));
-    $itemLen = count($items);
-    // If we get more than one item or no items display an error
-    if ($itemLen > 1) {
-        die("Invalid query or result: $query\n");
-    } elseif ($itemLen == 0) {
-        return NULL;
-    } else {
-        // Extract the first item (which should be the only item)
-        $item = $items[0];
-        return $item;
+function formValidation() {
+    $availableSlot = request('availableSlot');
+    $error = [];
+    foreach(request()->except('_token', '_method') as $item => $value) {
+        if (empty($value)) {
+            $error[$item] = "Missing value\n";
+        }
     }
+    if (!empty($availableSlot) && !is_numeric($availableSlot)) {
+        $error["availableSlot"] = "Nonnumeric value: $availableSlot\n";
+    } elseif (!empty($availableSlot) && ($availableSlot < 3 || $availableSlot > 8 || $availableSlot != strval(intval($availableSlot)))) {
+        $error["availableSlot"] = "Number entered must be between 3 to 8.\n";
+    }
+
+    return $error;
 }
 
-function add_company($company_name, $location) {
-    $sql = "INSERT INTO Company (company_name, location) VALUES (?, ?)";
-    DB::insert($sql, array($company_name, $location));
-    $id = DB::getPdo()->lastInsertId();
-    return $id;
-}
-
-/* Create new student */
-function add_student($first_name, $last_name) {
-    $sql = "INSERT INTO Student (first_name, last_name) VALUES (?, ?)";
-    DB::insert($sql, array($first_name, $last_name));
-    $id = DB::getPdo()->lastInsertId();
-    return $id;
-}
-
-/* Create new application */
-function add_application($projectId, $studentId, $justification, $priority) {
-    $sql = "INSERT INTO Application (project_id, student_id, justification, priority) VALUES (?, ?, ?, ?)";
-    DB::insert($sql, array($projectId, $studentId, $justification, $priority));
-    $id = DB::getPdo()->lastInsertId();
-    return $id;
-} 
-
+/** Home Page */
 Route::get('/', function () {
     $projectServices = new Project();
+
     $projects = $projectServices -> get_projects();
+    
     return view('home') -> with('projects', $projects);
 });
 
 /** Project Routes */
-
 /** Get create project page */
 Route::get('project/advertise', function () {
-    return view('project/advertise');
+    $storedCompanyId = request() -> session() -> get('companyId');
+    $company = array();
+    $project = array();
+    if (!empty($storedCompanyId)) {
+        $companyServices = new Company();
+        
+        $existingCompany = $companyServices -> get_company($storedCompanyId);
+        $company['company_name'] = $existingCompany -> company_name;
+        $company['location'] = $existingCompany -> location;
+    }
+    return view('project/advertise') -> with('company', $company) -> with('project', $project) -> with('error', array());
 });
 
 /** Create new project */
@@ -76,96 +70,170 @@ Route::post('project/advertise', function () {
     $relatedMajor = request('relatedMajor');
     $description = request('description');
     $availableSlot = request('availableSlot');
+    
+    $errors = formValidation();
+    if (count($errors) > 0) {
+        $company['company_name'] = $name;
+        $company['location'] = $location;
+        $project['title'] = $title;
+        $project['relatedMajor'] = $relatedMajor;
+        $project['description'] = $description;
+        $project['availableSlot'] = $availableSlot;
+        return view('project/advertise') -> with('company', $company) -> with('project', $project) -> withErrors($errors);
+    }
+
+    $companyServices = new Company();
+    $projectServices = new Project();
 
     // Check if company exists or create a new one
-    $company = find_company($name);
+    $company = $companyServices -> find_company($name);
     if (is_null($company)) {
-        $companyId = add_company($name, $location);
+        $companyId = $companyServices -> add_company($name, $location);
     } else {
         $companyId = $company -> id;
     }
-    $projectServices = new Project();
+
     $projectId = $projectServices -> add_project($companyId, $location, $title, $relatedMajor, $description, $availableSlot);
     // If successfully created then display newly created project 
     if ($projectId) {
+        request() -> session()-> put('companyId', $companyId);
         return redirect("project/$projectId");
     } else {
         die('Error adding new project');
     }
 });
 
-/** Get apply project page */
+/** Get apply project page API */
 Route::get('project/{projectId}/apply', function () {
-    return view('project/apply');
+    return view('project/apply') -> with('error', '');;
 });
 
+/** Apply project API */
 Route::post('project/{projectId}/apply', function () {
     $projectId = request() -> projectId;
-    $projectServices = new Project();
-    $project = $projectServices -> get_project($projectId);
-    if (!($project -> id)) {
-        die('Error project not found');
-    }
     $firstName = request('firstName');
     $lastName = request('lastName');
     $justification = request('justification');
-    $priority = request('pri$priority');
-    $student = find_student($firstName, $lastName);
-    if (is_null($student)) {
-        $studentId = add_student($firstName, $lastName);
-    } else {
-        $studentId = $student -> id;
-    }
-    add_application($projectId, $studentId, $justification, $priority);
-    return redirect("project/$projectId");
-});
+    $priority = request('priority');
 
-/** Get project detail page */
-Route::get('project/{projectId}', function () {
-    $projectId = request() -> projectId;
     $projectServices = new Project();
-    $project = $projectServices -> get_project($projectId);
-    $projectStudents = $projectServices -> get_project_students($projectId);
-    return view('project/detail') -> with('project', $project) -> with('students', $projectStudents);
-});
+    $studentServices = new Student();
+    $applicationServices = new Application();
 
-/** Get edit project detail page */
-Route::get('project/edit/{projectId}', function () {
-    $projectId = request() -> projectId;
-    $projectServices = new Project();
     $project = $projectServices -> get_project($projectId);
-    return view('project/edit') -> with('project', $project);
-});
 
-/** Update Project Detail */
-Route::post('project/{projectId}', function () {
-    $projectId = request() -> projectId;
-    $projectServices = new Project();
-    $project = $projectServices -> get_project($projectId);
     if (!($project -> id)) {
         die('Error project not found');
     }
+
+    $student = $studentServices -> find_student($firstName, $lastName);
+
+    if (is_null($student)) {
+        $studentId = $studentServices -> add_student($firstName, $lastName);
+    } else {
+        $studentId = $student -> id;
+    }
+
+    $duplicatedApplication = $applicationServices -> check_application_duplication($projectId, $studentId);
+    $studentApplicationNum = $studentServices -> get_student_applications($studentId);
+    if (!empty($duplicatedApplication)) {
+        $error = 'Error: You have already applied for this project.';
+    } elseif (count($studentApplicationNum) >= 3) {
+        $error = 'Error: 3 applications have already been made.';
+    }
+    if (!empty($error)) {
+        return view('project/apply') -> with('error', $error);
+    }
+
+    $applicationServices -> add_application($projectId, $studentId, $justification, $priority);
+    return redirect("project/$projectId");
+});
+
+/** Get project detail page API */
+Route::get('project/{projectId}', function () {
+    $projectId = request() -> projectId;
+
+    $projectServices = new Project();
+
+    $project = $projectServices -> get_project($projectId);
+    $projectStudents = $projectServices -> get_project_students($projectId);
+
+    return view('project/detail') -> with('projectId', $projectId) -> with('project', $project) -> with('students', $projectStudents);
+});
+
+/** Get edit project detail page API */
+Route::get('project/edit/{projectId}', function () {
+    $projectId = request() -> projectId;
+
+    $projectServices = new Project();
+
+    $project = $projectServices -> get_project($projectId);
+
+    return view('project/edit') -> with('projectId', $projectId) -> with('project', $project);
+});
+
+/** Update Project Detail API */
+Route::post('project/{projectId}', function () {
+    $projectId = request() -> projectId;
     $title = request('title');
     $relatedMajor = request('relatedMajor');
     $description = request('description');
     $availableSlot = request('availableSlot');
+
+    $projectServices = new Project();
+
+    $project = $projectServices -> get_project($projectId);
+
+    if (!($project -> id)) {
+        die('Error project not found');
+    }
+
+    $errors = formValidation();
+    if (count($errors) > 0) {
+        return view('project/edit') -> with('project', $project) -> withErrors($errors);
+    }
+
     $projectServices -> update_project($projectId, $title, $relatedMajor, $description, $availableSlot);
     return redirect("project/$projectId");
 });
 
-/** Delete Project */
+/** Delete Project API */
 Route::get('project/delete/{projectId}', function () {
     $projectId = request() -> projectId;
+
     $projectServices = new Project();
+
     $project = $projectServices -> get_project($projectId);
+
     if (!($project -> id)) {
         die('Error project not found');
     }
+
     $projectServices -> delete_project($projectId);
+
     return redirect("/");
+});
+
+/** Get applicant detail page API */
+Route::get('application/{applicationId}', function () {
+    $applicationId = request() -> applicationId;
+
+    $applicationServices = new Application();
+
+    $application = $applicationServices -> get_application_detail($applicationId);
+    
+    return view('application/detail') -> with('application', $application);
 });
 
 /** Dashboard Routes */
 Route::get('dashboard', function () {
-    return view('admin/dashboard');
+    $companyServices = new Company();
+
+    $companyAppRank = $companyServices -> get_company_project_ranks();
+    return view('admin/dashboard') -> with('companies', $companyAppRank);
+});
+
+/** Assignmnet Requirement Docs Routes */
+Route::get('requirement', function () {
+    return response() -> file(storage_path('app/public/assignment.pdf'));
 });

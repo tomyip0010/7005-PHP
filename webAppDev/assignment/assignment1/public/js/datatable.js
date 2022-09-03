@@ -1,10 +1,11 @@
 // Call the dataTables jQuery plugin
 $(document).ready(function() {
-  $('#dataTable').DataTable();
+  $('#dataTable').DataTable({
+    "ordering": false
+  });
 
-  $(".project-clickable").click(function() {
-    const projectId = $(this).data("id");
-    const projectLink = `project/${projectId}`;
-    window.document.location = projectLink
+  $(".row-clickable").click(function() {
+    const pathUrl = $(this).data("path");
+    window.document.location = pathUrl
   });
 });

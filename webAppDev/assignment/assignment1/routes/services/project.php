@@ -2,12 +2,14 @@
 namespace wp;
 use Illuminate\Support\Facades\DB;
 
-class Student {
+class Project {
   function __construct(){}    
 
   /* Gets all projects */
   function get_projects() {
-    $sql = "SELECT P.id, P.title, C.company_name FROM Project AS P, Company AS C WHERE P.company_id = C.id;";
+    $sql = "SELECT P.id, P.title, C.company_name, (SELECT COUNT(*) FROM Application AS A WHERE A.project_id = P.id) AS 'application_no'
+            FROM Project AS P, Company AS C
+            WHERE P.company_id = C.id";
     $items = DB::select($sql);
     return $items;
   }
@@ -18,7 +20,7 @@ class Student {
     $items = DB::select($sql, array($id));
     // If we get more than one item or no items display an error
     if (count($items) != 1) {
-        die("Invalid query or result: $query\n");
+        die("Invalid query or result: $sql\n");
     }
     // Extract the first item (which should be the only item)
     $item = $items[0];
@@ -49,7 +51,7 @@ class Student {
 
   /* Gets all students applied for a specific project */
   function get_project_students($id) {
-    $sql = "SELECT S.id, S.first_name, S.last_name FROM Project AS P, Student AS S, Application AS A WHERE A.project_id = P.id AND A.student_id = S.id and P.id = ?;";
+    $sql = "SELECT S.id, S.first_name, S.last_name, A.priority, A.id AS applicationId FROM Project AS P, Student AS S, Application AS A WHERE A.project_id = P.id AND A.student_id = S.id and P.id = ?;";
     $items = DB::select($sql, array($id));
     return $items;
   }

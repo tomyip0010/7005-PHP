@@ -21,14 +21,16 @@
               <th>ID</th>
               <th>Title</th>
               <th>Company</th>
+              <th>Total Applications</th>
             </tr>
           </thead>
           <tbody>
             @forelse($projects as $project)
-              <tr class="project-clickable" data-id={{ $project -> id }}>
+              <tr class="row-clickable" data-path="{{url('project/'.$project -> id) }}">
                 <td>{{ $project -> id }}</td>
                 <td>{{ $project -> title }}</td>
                 <td>{{ $project -> company_name }}</td>
+                <td>{{ $project -> application_no }}</td>
               </tr>
             @empty
               <tr>
@@ -45,7 +47,7 @@
 @endsection
 
 @section('styles')
-  <link href="{{asset('css/home.css')}}" type="text/css" rel="stylesheet">
+  <link href="{{asset('css/common.css')}}" type="text/css" rel="stylesheet">
 @endsection
 
 @section('scripts')
