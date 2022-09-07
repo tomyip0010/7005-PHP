@@ -29,16 +29,19 @@
     </div>
     <div class="form-group">
       <label for="availableSlot">No. of Available Positions</label>
-      <input type="text" name="availableSlot" value="{{ $project -> available_slot }}" class="form-control {{$errors->has('availableSlot') ? 'is-invalid' : ''}}" placeholder="Related Major">
+      <!-- <input type="text" name="availableSlot" value="{{ $project -> available_slot }}" class="form-control {{$errors->has('availableSlot') ? 'is-invalid' : ''}}" placeholder="Related Major">
+      @if($errors->has('availableSlot'))
+        <div class="invalid-feedback">{{ $errors->first('availableSlot') }}</div>
+      @endif -->
+      <select name="availableSlot" class="form-control {{$errors->has('availableSlot') ? 'is-invalid' : ''}}">
+        <option value="" disabled>Select number of available positions</option>
+        @foreach (range(1,10) as $opt)
+          <option value="{{$opt}}" {{$opt == $project -> available_slot ? 'selected' : ''}}>{{$opt}}</option>
+        @endforeach
+    	</select>
       @if($errors->has('availableSlot'))
         <div class="invalid-feedback">{{ $errors->first('availableSlot') }}</div>
       @endif
-      <!-- <select name="availableSlot" class="form-control">
-        <option value="" disabled>Select number of available positions</option>
-        @foreach (range(3,8) as $opt)
-          <option value="{{$opt}}" {{intval($opt) == intval($project -> available_slot) ? 'selected' : ''}}>{{$opt}}</option>
-        @endforeach
-    	</select> -->
     </div>
     <input type="submit" value="Confirm" class="btn btn-primary btn-user btn-block">
   </form>

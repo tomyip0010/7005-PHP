@@ -19,7 +19,7 @@ class Application {
     $items = DB::select($sql, array($id));
     // If we get more than one item or no items display an error
     if (count($items) != 1) {
-        die("Invalid query or result: $sql\n");
+      die("Invalid query or result: $sql\n");
     }
     // Extract the first item (which should be the only item)
     $item = $items[0];

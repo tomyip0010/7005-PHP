@@ -12,13 +12,13 @@ class Student {
     $studentLen = count($students);
     // If we get more than one student or no students display an error
     if ($studentLen > 1) {
-        die("Invalid query or result: $sql\n");
+      die("Invalid query or result: $sql\n");
     } elseif ($studentLen == 0) {
-        return NULL;
+      return NULL;
     } else {
-        // Extract the first student (which should be the only student)
-        $student = $students[0];
-        return $student;
+      // Extract the first student (which should be the only student)
+      $student = $students[0];
+      return $student;
     }
   }
 
@@ -50,11 +50,19 @@ class Student {
     $items = DB::select($sql, array($id));
     // If we get more than one item or no items display an error
     if (count($items) != 1) {
-        die("Invalid query or result: $sql\n");
+      die("Invalid query or result: $sql\n");
     }
     // Extract the first item (which should be the only item)
     $item = $items[0];
     return $item;
+  }
+
+  /* Get student with the given id */
+  function get_students_with_applications() {
+    $sql = "SELECT * FROM Student AS S, Application AS A WHERE A.student_id = S.id GROUP BY S.id HAVING COUNT(A.id) > 0";
+    $items = DB::select($sql);
+    
+    return $items;
   }
 }
 

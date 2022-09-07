@@ -44,8 +44,10 @@ class Project {
   /* Delete project */
   function delete_project($id) {
     $deleteApplicationSql = "DELETE FROM Application AS A WHERE A.project_id = ?;";
+    $deleteAssignmentSql = "DELETE FROM Assignment AS A WHERE A.project_id = ?;";
     $deleteProjectSql = "DELETE FROM Project WHERE id = ?"; 
     DB::delete($deleteApplicationSql, array($id)); 
+    DB::delete($deleteAssignmentSql, array($id)); 
     DB::delete($deleteProjectSql, array($id)); 
   }
 
