@@ -25,11 +25,18 @@ use Illuminate\Support\Facades\Route;
 
 /** Server side validation for company advertise form */
 function formValidation() {
-	$availableSlot = request('availableSlot');
+	$name = request('companyName');
+  $location = request('location');
+  $title = request('title');
+  $relatedMajor = request('relatedMajor');
+  $description = request('description');
+  $availableSlot = request('availableSlot');
+  $requestParams = ['companyName' => $name, 'location' => $location, 'title' => $title,
+    'relatedMajor' => $relatedMajor, 'description' => $description, 'availableSlot' => $availableSlot];
 	$error = [];
 
 	/** Check if all field are filled */
-	foreach(request()->except('_token', '_method') as $item => $value) {
+	foreach($requestParams as $item => $value) {
 		if (empty($value)) {
 			$error[$item] = "Missing value\n";
 		}

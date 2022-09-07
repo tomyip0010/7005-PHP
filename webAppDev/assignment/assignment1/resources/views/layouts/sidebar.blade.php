@@ -42,7 +42,7 @@
 
 	<div class="sidebar-card d-none d-lg-flex">
 		<a href="{{url('requirement')}}" class="btn btn-success">
-			<span class="text">Requirement Doc</span>
+			<span class="text">Documentation</span>
 		</a>
 	</div>
 </ul>
