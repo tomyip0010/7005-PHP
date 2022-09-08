@@ -1,16 +1,9 @@
 DROP TABLE IF EXISTS Application;
 DROP TABLE IF EXISTS Assignment;
 DROP TABLE IF EXISTS Project;
-DROP TABLE IF EXISTS Company;
 DROP TABLE IF EXISTS Student;
 
 /** Create tables **/
-CREATE TABLE IF NOT EXISTS Company (
-	id 					INTEGER PRIMARY KEY AUTOINCREMENT,
-	company_name        VARCHAR(25) NOT NULL,
-	location        	VARCHAR(50) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS Student (
 	id 					INTEGER PRIMARY KEY AUTOINCREMENT,
 	first_name      	VARCHAR(20) NOT NULL,
@@ -19,12 +12,12 @@ CREATE TABLE IF NOT EXISTS Student (
 
 CREATE TABLE IF NOT EXISTS Project (
 	id       			INTEGER PRIMARY KEY AUTOINCREMENT,
-	company_id     		INTEGER NOT NULL,
+	company_name        VARCHAR(25) NOT NULL,
+	location        	VARCHAR(50) NOT NULL,
 	title	 			VARCHAR(50) NOT NULL,
 	related_major	 	VARCHAR(20) NOT NULL,
 	description	 		TEXT NOT NULL,
-	available_slot	 	INTEGER NOT NULL,
-	FOREIGN KEY (company_id) REFERENCES Company(id)
+	available_slot	 	INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Application (
@@ -46,13 +39,6 @@ CREATE TABLE IF NOT EXISTS Assignment (
 );
 
 /** Populate sample values **/
-INSERT INTO Company (id, company_name, location) VALUES
-(NULL, 'Company One', 'Address One'),
-(NULL, 'Company Two', 'Address Two'),
-(NULL, 'Company Three', 'Address Three'),
-(NULL, 'Company Four', 'Address Four'),
-(NULL, 'Company Five', 'Address Five');
-
 INSERT INTO Student (id, first_name, last_name) VALUES
 (NULL, 'Student', 'One'),
 (NULL, 'Student', 'Two'),
@@ -64,15 +50,15 @@ INSERT INTO Student (id, first_name, last_name) VALUES
 (NULL, 'Student', 'Eight'),
 (NULL, 'Student', 'Nine');
 
-INSERT INTO Project (id, company_id, title, related_major, description, available_slot) VALUES
-(NULL, 1, 'Project One', 'software development', 'This is a test description', 5),
-(NULL, 1, 'Project Two', 'software development', 'This is a test description', 5),
-(NULL, 1, 'Project Three', 'software development', 'This is a test description', 5),
-(NULL, 1, 'Project Four', 'software development', 'This is a test description', 5),
-(NULL, 2, 'Project Five', 'software development', 'This is a test description', 5),
-(NULL, 2, 'Project Six', 'software development', 'This is a test description', 5),
-(NULL, 3, 'Project Seven', 'software development', 'This is a test description', 5),
-(NULL, 4, 'Project Eight', 'software development', 'This is a test description', 5);
+INSERT INTO Project (id, company_name, location, title, related_major, description, available_slot) VALUES
+(NULL, 'Company One', 'Address One', 'Project One', 'software development', 'This is a test description', 5),
+(NULL, 'Company One', 'Address One', 'Project Two', 'software development', 'This is a test description', 5),
+(NULL, 'Company One', 'Address One', 'Project Three', 'software development', 'This is a test description', 5),
+(NULL, 'Company One', 'Address One', 'Project Four', 'software development', 'This is a test description', 5),
+(NULL, 'Company Two', 'Address Two', 'Project Five', 'software development', 'This is a test description', 5),
+(NULL, 'Company Two', 'Address Two', 'Project Six', 'software development', 'This is a test description', 5),
+(NULL, 'Company Three', 'Address Three', 'Project Seven', 'software development', 'This is a test description', 5),
+(NULL, 'Company Four', 'Address Four', 'Project Eight', 'software development', 'This is a test description', 5);
 
 INSERT INTO Application (id, project_id, student_id, justification, priority) VALUES
 (NULL, 1, 1, 'This is a test justification', 1),
@@ -105,6 +91,5 @@ INSERT INTO Application (id, project_id, student_id, justification, priority) VA
 
 /* Sample query to test insertion worked. */
 SELECT
-P.id, P.title, C.company_name
-FROM `Project` AS P, `Company` AS C
-WHERE P.company_id = C.id;
+P.id, P.title
+FROM `Project` AS P;

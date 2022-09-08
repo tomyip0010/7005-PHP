@@ -32,7 +32,7 @@ class Student {
 
   /* Get all applications of specified student */
   function get_student_applications($studetnId) {
-    $sql = "SELECT * FROM Application AS A, Student AS S, Project AS P, Company AS C WHERE A.student_id = S.id AND A.project_id = P.id AND P.company_id = C.id AND S.id = ? ORDER BY A.priority ASC";
+    $sql = "SELECT * FROM Application AS A, Student AS S, Project AS P WHERE A.student_id = S.id AND A.project_id = P.id AND S.id = ? ORDER BY A.priority ASC";
     $items = DB::select($sql, array($studetnId));
     return $items;
   }

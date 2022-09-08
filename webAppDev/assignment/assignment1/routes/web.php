@@ -3,11 +3,9 @@
 use wp\Project;
 use wp\Student;
 use wp\Application;
-use wp\Company;
 use wp\Assignment;
 require 'services/project.php';
 require 'services/student.php';
-require 'services/company.php';
 require 'services/application.php';
 require 'services/assignment.php';
 
@@ -67,19 +65,18 @@ Route::get('/', function () {
  * */
 /** Get create project page */
 Route::get('project/advertise', function () {
-  /** Get stored companyId in the session cache */
-  $storedCompanyId = request() -> session() -> get('companyId');
-  $company = array();
+  /** Get stored projectId in the session cache */
+  $storedProjectId = request() -> session() -> get('projectId');
   $project = array();
 
-  /** retreive the company detail if there is a cached companyId */
-  if (!empty($storedCompanyId)) {
-    $companyServices = new Company();
-    $existingCompany = $companyServices -> get_company($storedCompanyId);
-    $company['company_name'] = $existingCompany -> company_name;
-    $company['location'] = $existingCompany -> location;
+  /** retreive the company detail if there is a cached projectId */
+  if (!empty($storedProjectId)) {
+    $projectServices = new Project();
+    $existingProject = $projectServices -> get_project($storedProjectId);
+    $project['company_name'] = $existingProject -> company_name;
+    $project['location'] = $existingProject -> location;
   }
-  return view('project/advertise') -> with('company', $company) -> with('project', $project) -> with('error', array());
+  return view('project/advertise') -> with('project', $project) -> with('error', array());
 });
 
 /** Create new project */
@@ -94,32 +91,23 @@ Route::post('project/advertise', function () {
   /** Server side form validation */
   $errors = formValidation();
   if (count($errors) > 0) {
-    $company['company_name'] = $name;
-    $company['location'] = $location;
+    $project['company_name'] = $name;
+    $project['location'] = $location;
     $project['title'] = $title;
     $project['relatedMajor'] = $relatedMajor;
     $project['description'] = $description;
     $project['availableSlot'] = $availableSlot;
-    return view('project/advertise') -> with('company', $company) -> with('project', $project) -> withErrors($errors);
+    return view('project/advertise') -> with('project', $project) -> withErrors($errors);
   }
 
-  $companyServices = new Company();
   $projectServices = new Project();
 
-  // Check if company exists or create a new one
-  $company = $companyServices -> find_company($name);
-  if (is_null($company)) {
-    $companyId = $companyServices -> add_company($name, $location);
-  } else {
-    $companyId = $company -> id;
-  }
-
   /** Add a new project */
-  $projectId = $projectServices -> add_project($companyId, $location, $title, $relatedMajor, $description, $availableSlot);
+  $projectId = $projectServices -> add_project($name, $location, $title, $relatedMajor, $description, $availableSlot);
   
   // If successfully created then display newly created project 
   if ($projectId) {
-    request() -> session()-> put('companyId', $companyId);
+    request() -> session()-> put('projectId', $projectId);
     return redirect("project/$projectId");
   } else {
     die('Error adding new project');
@@ -312,9 +300,9 @@ Route::get('application/{applicationId}', function () {
  * Company Routes 
  * */
 Route::get('companies', function () {
-  $companyServices = new Company();
+  $projectServices = new Project();
 
-  $companyAppRank = $companyServices -> get_company_project_ranks();
+  $companyAppRank = $projectServices -> get_company_project_ranks();
   return view('company/list') -> with('companies', $companyAppRank);
 });
 

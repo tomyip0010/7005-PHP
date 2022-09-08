@@ -10,7 +10,7 @@
     <div class="p-4 mb-4">
       <img src="{{asset('img/ERD.png')}}" class="w-75 mb-4" alt="ERD" />
       <p>
-        My ERD consists of 5 tables including Project, Application, Assignment, Student and Company. In the beginning, company table is extracted out into an independent table to cope with companies reside in different location with the same name. But it turns out company name is unique in this project.
+        My ERD consists of 4 tables including Project, Application, Assignment and Student.
       </p>
     </div>
   </div>

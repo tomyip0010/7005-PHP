@@ -15,7 +15,7 @@ class Application {
 
   /* Get application with the given id */
   function get_application_detail($id) {
-    $sql = "SELECT * FROM Application AS A, Student AS S, Project AS P, Company AS C WHERE P.company_id = C.id AND P.id = A.project_id AND S.id = A.student_id AND A.id = ?";
+    $sql = "SELECT * FROM Application AS A, Student AS S, Project AS P WHERE P.id = A.project_id AND S.id = A.student_id AND A.id = ?";
     $items = DB::select($sql, array($id));
     // If we get more than one item or no items display an error
     if (count($items) != 1) {

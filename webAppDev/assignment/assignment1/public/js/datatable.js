@@ -4,6 +4,7 @@ $(document).ready(function() {
     ordering: false,
     searching: false,
     lengthChange: false,
+    paging: false,
   });
 
   $(".row-clickable").click(function() {

@@ -9,12 +9,12 @@
     {{ csrf_field() }}
     <div class="form-group">
       <label for="companyName">Company Name</label>
-      <input value="{{ $project -> company_name }}" disabled type="text" name="companyName" placeholder="Company Name">
+      <input value="{{ $project -> company_name }}" disabled type="text" class="form-control" name="companyName" placeholder="Company Name">
       <input value="{{ $project -> company_name }}" hidden type="text" name="companyName" placeholder="Company Name">
     </div>
     <div class="form-group">
       <label for="location">Company Location</label>
-      <input value="{{ $project -> location }}" disabled type="text" name="location" placeholder="Location">
+      <input value="{{ $project -> location }}" disabled type="text" class="form-control" name="location" placeholder="Location">
       <input value="{{ $project -> location }}" hidden type="text" name="location" placeholder="Location">
     </div>
     <div class="form-group">

@@ -9,14 +9,14 @@
     {{ csrf_field() }}
     <div class="form-group">
       <label for="companyName">Company Name</label>
-      <input type="text" name="companyName" value="{{ !empty($company['company_name']) ? $company["company_name"] : '' }}" class="form-control {{$errors->has('companyName') ? 'is-invalid' : ''}}" placeholder="Company Name">
+      <input type="text" name="companyName" value="{{ !empty($project['company_name']) ? $project["company_name"] : '' }}" class="form-control {{$errors->has('companyName') ? 'is-invalid' : ''}}" placeholder="Company Name">
       @if($errors->has('companyName'))
         <div class="invalid-feedback">{{ $errors->first('companyName') }}</div>
       @endif
     </div>
     <div class="form-group">
       <label for="location">Company Location</label>
-      <input type="text" name="location" value="{{ !empty($company['location']) ? $company["location"] : '' }}" class="form-control {{$errors->has('location') ? 'is-invalid' : ''}}" placeholder="Location">
+      <input type="text" name="location" value="{{ !empty($project['location']) ? $project["location"] : '' }}" class="form-control {{$errors->has('location') ? 'is-invalid' : ''}}" placeholder="Location">
       @if($errors->has('location'))
         <div class="invalid-feedback">{{ $errors->first('location') }}</div>
       @endif

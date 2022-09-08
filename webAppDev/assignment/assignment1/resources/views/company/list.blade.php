@@ -16,7 +16,6 @@
           <thead>
             <tr>
               <th>Rank</th>
-              <th>ID</th>
               <th>Company</th>
               <th>Total Projects</th>
             </tr>
@@ -25,13 +24,12 @@
             @forelse($companies as $company)
               <tr>
                 <td>{{ $loop -> index + 1 }}</td>
-                <td>{{ $company -> id }}</td>
                 <td>{{ $company -> company_name }}</td>
                 <td>{{ $company -> project_no }}</td>
               </tr>
             @empty
               <tr>
-                <td colspan=4>
+                <td colspan=3>
                   No results found.
                 </td>
               </tr>
