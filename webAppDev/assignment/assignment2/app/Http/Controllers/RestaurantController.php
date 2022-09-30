@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Dish;
+use Illuminate\Support\Facades\Auth;
 
 class RestaurantController extends Controller
 {
@@ -57,7 +58,14 @@ class RestaurantController extends Controller
         $items_per_page = 5; 
         $restaurant = User::find($id);
         $dishes = $restaurant->dishes()->paginate($items_per_page);
-        return view('restaurant.show')->with('restaurant', $restaurant)->with('dishes', $dishes);
+        $orders = NULL;
+        $cartId = session('cartId');
+        if (Auth::check() && $cartId) {
+            $user = Auth::user();
+            $orders = $user -> orderedDishes() -> whereRaw('fulfilled = ? and cart_id = ?', array(false, $cartId)) -> get();
+        }
+        // dd($orders);
+        return view('restaurant.show')->with('restaurant', $restaurant)->with('dishes', $dishes)->with('orders', $orders);
     }
 
     /**

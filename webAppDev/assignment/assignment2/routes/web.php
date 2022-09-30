@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,5 +21,6 @@ Route::get('/', [RestaurantController::class, 'index']);
 Route::resource('restaurant', RestaurantController::class);
 Route::resource('dish', DishController::class);
 Route::resource('image', ImageController::class);
+Route::resource('order', OrderController::class);
 
 require __DIR__.'/auth.php';

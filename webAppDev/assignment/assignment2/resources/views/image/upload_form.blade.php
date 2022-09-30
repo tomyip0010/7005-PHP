@@ -8,7 +8,7 @@
 	<form action="{{ url('image') }}" method="POST" enctype="multipart/form-data">
 		@csrf
 		<input type="hidden" name="dishId" value="{{$dishId}}">
-		  <div x-data="showImage()" class="flex items-center justify-center">
+        <div x-data="showImage()" class="flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-xl md:w-9/12 lg:w-1/2">
                 <div class="m-4">
                     <label class="inline-block mb-2 text-gray-500">Upload

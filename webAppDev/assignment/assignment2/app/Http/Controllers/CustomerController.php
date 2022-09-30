@@ -7,12 +7,26 @@ use App\Models\User;
 use App\Models\Dish;
 use Illuminate\Support\Facades\Auth;
 
-class OrderController extends Controller
+class CustomerController extends Controller
 {
     public function __construct() {
         $this->middleware('auth', ['except'=>['index', 'show']]);
         // $this->middleware('restaurant', ['except'=>['index', 'show']]);
     }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function cart()
+    {
+        //
+        $user = Auth::user();
+        $orders = $user -> orderedDishes();
+        return view('customer.cart');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -31,8 +45,6 @@ class OrderController extends Controller
     public function create()
     {
         //
-        $userId = Auth::id(); 
-        $dishId = $request -> dishId;
     }
 
     /**
@@ -44,22 +56,6 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
-        $cartId = $request -> session() -> get('cartId');
-        if (!$cartId) {
-            $cartId = time();
-            $request -> session() -> put('cartId', $cartId);
-        }
-        $user = Auth::user(); 
-        $dishId = $request -> dishId;
-        $dish = Dish::find($dishId);
-        $restaurantId = $dish -> restaurant_id;
-        $quantity = $request -> quantity;
-        $user->orderedDishes()->attach($dish->id, array('quantity' => $quantity, 'cart_id' => $cartId, 'fulfilled' => false, 'restaurant_id' => $restaurantId));
-        // if (isDirect) {
-        //     // $request -> session() -> forget('cartId');
-        //     return view('customer.orders');
-        // }
-        return back();
     }
 
     /**

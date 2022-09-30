@@ -76,3 +76,31 @@ if (!function_exists('isOwnedDish')) {
         }
      }
 }
+
+if (!function_exists('getFinalDishPrice')) {
+    function getFinalDishPrice($dish)
+    {
+        $discount = $dish -> discount;
+        $price = $dish -> price;
+        $quantity = $dish -> pivot -> quantity;
+        if ($discount) {
+            return $price * $quantity * (100 - $discount) / 100;
+        } else {
+            return $price * $quantity;
+        }
+     }
+}
+
+if (!function_exists('getOrderSum')) {
+    function getOrderSum($orders)
+    {
+        $discount = $dish -> discount;
+        $price = $dish -> price;
+        $quantity = $dish -> pivot -> quantity;
+        if ($discount) {
+            return $price * $quantity * (100 - $discount) / 100;
+        } else {
+            return $price * $quantity;
+        }
+     }
+}

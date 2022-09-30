@@ -49,10 +49,10 @@ class User extends Authenticatable
     }
 
     function orderedDishes() {
-        return $this->belongsToMany('App\Models\Dish', 'orders', 'customer_id', 'dish_id');
+        return $this->belongsToMany('App\Models\Dish', 'orders', 'customer_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'restaurant_id')->withTimestamps();
     }
 
     function receivedDishes() {
-        return $this->belongsToMany('App\Models\Dish', 'orders', 'restaurant_id', 'dish_id');
+        return $this->belongsToMany('App\Models\Dish', 'orders', 'restaurant_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'customer_id')->withTimestamps();
     }
 }
