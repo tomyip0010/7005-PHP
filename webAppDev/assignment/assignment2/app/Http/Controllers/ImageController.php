@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Models\Image;
 use App\Models\Dish;
 use Illuminate\Support\Facades\Auth;
 
-class OrderController extends Controller
+class ImageController extends Controller
 {
     public function __construct() {
         $this->middleware('auth', ['except'=>['index', 'show']]);
-        // $this->middleware('restaurant', ['except'=>['index', 'show']]);
     }
     /**
      * Display a listing of the resource.
@@ -31,8 +30,8 @@ class OrderController extends Controller
     public function create()
     {
         //
-        $userId = Auth::id(); 
-        $dishId = $request -> dishId;
+        $dishId = request('dishId');
+        return view('image.upload_form')->with('dishId', $dishId);
     }
 
     /**
@@ -44,22 +43,17 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
-        $cartId = $request -> session() -> get('cartId');
-        if (!$cartId) {
-            $cartId = time();
-            $request -> session() -> put('cartId', $cartId);
-        }
-        $isDirect = $request -> isDirectPurchase === 'true';
-        $user = Auth::user(); 
+        $userId = Auth::id(); 
         $dishId = $request -> dishId;
         $dish = Dish::find($dishId);
-        $quantity = $request -> quantity;
-        $user->orderedDish()->attach($dish->id, array('quantity' => $quantity));
-        if (isDirect) {
-            $request -> session() -> forget('cartId');
-            return view('customer.orders');
-        }
-        return view('customer.cart');
+        $restaurantId = $dish->restaurant_id;
+        $img = new Image();
+        $image_store = request()->file('image')->store('dish_images', 'public');
+        $img->filePath = $image_store;
+        $img->user_id = $userId;
+        $img->dish_id = $dishId;
+        $img->save();
+        return redirect("restaurant/$restaurantId"); 
     }
 
     /**

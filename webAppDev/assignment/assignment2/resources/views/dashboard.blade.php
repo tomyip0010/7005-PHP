@@ -1,17 +1,41 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+	@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    You're logged in!
-                </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+	@section('title')
+	Restaurants
+	@endsection
+
+	@section('content')
+	<div class="relative rounded-xl overflow-auto">
+		<div class="shadow-sm overflow-hidden py-5">
+			<table class="border-collapse table-fixed w-full text-sm bg-white">
+				<thead>
+					<tr>
+						<th class="px-6 py-4">ID</th>
+						<th class="px-6 py-4">Name</th>
+					</tr>
+				</thead>
+				<tbody>
+					@forelse($restaurants as $restaurant)
+						<tr class="hover-bg cursor-pointer">
+							<td class="border-t border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+								<a href="restaurant/{{$restaurant->id}}" class="w-100 h-100 p-4 pl-8 d-block">
+									{{ $restaurant -> id }}
+								</a>
+							</td>
+							<td class="border-t border-slate-100 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+								<a href="restaurant/{{$restaurant->id}}" class="w-100 h-100 p-4 pl-8 d-block text-d">
+									{{ $restaurant -> name }}
+								</a>
+							</td>
+						</tr>
+					@empty
+						<tr>
+							<td colspan=2 class="px-6 py-4">Empty</td>
+						</tr>
+					@endforelse
+				</tbody>
+			</table>
+		</div>
+	</div>
+	{{ $restaurants->links()}}
+	@endsection

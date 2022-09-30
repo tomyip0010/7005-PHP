@@ -16,10 +16,11 @@ return new class extends Migration
         Schema::create('dishes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->float('price');
-            $table->string('image')->nullable();
             $table->float('discount')->nullable();
+            $table->unsignedBigInteger('restaurant_id');
+            $table->foreign('restaurant_id')->references('id')->on('users'); // Enforces foreign key constraint
             $table->timestamps();
         });
     }
@@ -31,6 +32,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('dishes');
     }
 };

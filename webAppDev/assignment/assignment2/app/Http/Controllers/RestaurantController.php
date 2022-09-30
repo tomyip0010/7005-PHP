@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Dish;
-use Illuminate\Support\Facades\Auth;
 
-class OrderController extends Controller
+class RestaurantController extends Controller
 {
     public function __construct() {
         $this->middleware('auth', ['except'=>['index', 'show']]);
-        // $this->middleware('restaurant', ['except'=>['index', 'show']]);
     }
     /**
      * Display a listing of the resource.
@@ -21,6 +19,9 @@ class OrderController extends Controller
     public function index()
     {
         //
+        $items_per_page = 1; 
+        $restaurants = User::where('userType', '2')->paginate($items_per_page);
+        return view('dashboard')->with('restaurants', $restaurants);
     }
 
     /**
@@ -31,8 +32,6 @@ class OrderController extends Controller
     public function create()
     {
         //
-        $userId = Auth::id(); 
-        $dishId = $request -> dishId;
     }
 
     /**
@@ -44,22 +43,6 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
-        $cartId = $request -> session() -> get('cartId');
-        if (!$cartId) {
-            $cartId = time();
-            $request -> session() -> put('cartId', $cartId);
-        }
-        $isDirect = $request -> isDirectPurchase === 'true';
-        $user = Auth::user(); 
-        $dishId = $request -> dishId;
-        $dish = Dish::find($dishId);
-        $quantity = $request -> quantity;
-        $user->orderedDish()->attach($dish->id, array('quantity' => $quantity));
-        if (isDirect) {
-            $request -> session() -> forget('cartId');
-            return view('customer.orders');
-        }
-        return view('customer.cart');
     }
 
     /**
@@ -71,6 +54,10 @@ class OrderController extends Controller
     public function show($id)
     {
         //
+        $items_per_page = 5; 
+        $restaurant = User::find($id);
+        $dishes = $restaurant->dishes()->paginate($items_per_page);
+        return view('restaurant.show')->with('restaurant', $restaurant)->with('dishes', $dishes);
     }
 
     /**

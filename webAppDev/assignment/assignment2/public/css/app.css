@@ -6,7 +6,7 @@
     cursor: pointer !important;
 }
 
-.hover-bg {
+.hover-bg:hover {
     background-color: rgb(148 163 184);
 }
 

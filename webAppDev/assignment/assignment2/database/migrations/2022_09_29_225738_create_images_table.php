@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
+        Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->integer('customer_id');
-            $table->integer('restaurant_id');
+            $table->integer('user_id');
             $table->integer('dish_id');
-            $table->integer('cart_id');
-            $table->integer('quantity');
-            $table->boolean('fulfilled')->default(0);
+            $table->string('filePath');
             $table->timestamps();
         });
     }
@@ -33,6 +30,6 @@ return new class extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('orders');
+        Schema::dropIfExists('images');
     }
 };

@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('address')->nullable();
-            $table->boolean('approved');
-            $table->integer('userType');
+            $table->boolean('approved')->default(0);
+            $table->string('userType');
             $table->rememberToken();
             $table->timestamps();
         });

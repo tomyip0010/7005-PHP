@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'userType',
+        'address',
     ];
 
     /**
@@ -41,4 +43,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    function dishes() {
+        return $this->hasMany('App\Models\Dish', 'restaurant_id', 'id');
+    }
+
+    function orderedDishes() {
+        return $this->belongsToMany('App\Models\Dish', 'orders', 'customer_id', 'dish_id');
+    }
+
+    function receivedDishes() {
+        return $this->belongsToMany('App\Models\Dish', 'orders', 'restaurant_id', 'dish_id');
+    }
 }
