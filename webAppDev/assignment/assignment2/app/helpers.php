@@ -78,11 +78,15 @@ if (!function_exists('isOwnedDish')) {
 }
 
 if (!function_exists('getFinalDishPrice')) {
-    function getFinalDishPrice($dish)
+    function getFinalDishPrice($item, $isPivot = true)
     {
-        $discount = $dish -> discount;
-        $price = $dish -> price;
-        $quantity = $dish -> pivot -> quantity;
+        $discount = $item -> discount;
+        $price = $item -> price;
+        if ($isPivot) {
+            $quantity = $item -> pivot -> quantity;
+        } else {
+            $quantity = $item -> quantity;
+        }
         if ($discount) {
             return $price * $quantity * (100 - $discount) / 100;
         } else {
@@ -92,15 +96,12 @@ if (!function_exists('getFinalDishPrice')) {
 }
 
 if (!function_exists('getOrderSum')) {
-    function getOrderSum($orders)
+    function getOrderSum($orders, $isPivot = true)
     {
-        $discount = $dish -> discount;
-        $price = $dish -> price;
-        $quantity = $dish -> pivot -> quantity;
-        if ($discount) {
-            return $price * $quantity * (100 - $discount) / 100;
-        } else {
-            return $price * $quantity;
+        $total = 0;
+        foreach ($orders as $order) {
+            $total += getFinalDishPrice($order, $isPivot);
         }
+        return $total;
      }
 }

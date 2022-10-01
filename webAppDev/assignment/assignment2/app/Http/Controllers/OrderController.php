@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\Dish;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth', ['except'=>['index', 'show']]);
+        $this->middleware('auth');
         // $this->middleware('restaurant', ['except'=>['index', 'show']]);
     }
     /**
@@ -21,6 +23,15 @@ class OrderController extends Controller
     public function index()
     {
         //
+        $user = Auth::user();
+        $isRestaurant = $user -> userType === '2';
+        if ($isRestaurant) {
+            $orders = $user-> receivedOrders() -> where('fulfilled', true) -> orderby('cart_id') -> get();
+        } else {
+            $orders = $user-> orders() -> where('fulfilled', true) -> orderby('cart_id') -> get();
+        }
+        // dd($user -> userType, $isRestaurant, $orders);
+        return view('order.index')->with('orders', $orders);
     }
 
     /**
@@ -44,26 +55,68 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         //
-        $cartId = $request -> session() -> get('cartId');
-        if (!$cartId) {
-            $cartId = time();
-            $request -> session() -> put('cartId', $cartId);
+        $placeOrder = $request -> placeOrder === 'true';
+        if ($placeOrder) {
+            $restaurantId = $request -> restaurantId;
+        } else {
+            $dishId = $request -> dishId;
+            $dish = Dish::find($dishId);
+            $restaurantId = $dish -> restaurant_id;
+        }
+
+        $sessionData = $request -> session() -> get('cartId');
+
+        if (!$sessionData || !array_key_exists('res'.$restaurantId, $sessionData)) {
+            $currentTime = new Carbon();
+            $cartId = $currentTime->getTimestamp();
+            if (!$sessionData) {
+                $existingSessions = [];
+            } else {
+                $existingSessions = $sessionData;
+            }
+            $request -> session() -> put('cartId', array_merge(['res'.$restaurantId => $cartId], $existingSessions));
+        } else {
+            $cartId = $sessionData['res'.$restaurantId];
         }
         $user = Auth::user(); 
-        $dishId = $request -> dishId;
-        $dish = Dish::find($dishId);
-        $restaurantId = $dish -> restaurant_id;
-        $quantity = $request -> quantity;
-        $user->orderedDishes()->attach($dish->id, array('quantity' => $quantity, 'cart_id' => $cartId, 'fulfilled' => false, 'restaurant_id' => $restaurantId));
-        // if (isDirect) {
-        //     // $request -> session() -> forget('cartId');
-        //     return view('customer.orders');
-        // }
-        return back();
+        // dd($cartId, $sessionData);
+        if ($placeOrder) {
+            // dd($cartId, $sessionData, $restaurantId);
+            $pendingOrders = $user-> orders()
+                ->where('fulfilled', false)
+                ->where('cart_id', $cartId);
+            $pendingOrders -> update([
+                'fulfilled' => true,
+                'order_date' => time(),
+            ]);
+            $request -> session() -> forget('cartId');
+            return redirect("order/$cartId");
+        } else {
+            $quantity = $request -> quantity;
+            $existingOrders = $user->orders()
+                ->where('fulfilled', false)
+                ->where('cart_id', $cartId)
+                ->where('dish_id', $dish -> id);
+            if ($existingOrders -> count() > 0) {
+                $existingOrders -> increment('quantity', $quantity);
+            } else {
+                $user->orderedDishes()->attach($dish->id, array(
+                    'quantity' => $quantity,
+                    'cart_id' => $cartId,
+                    'fulfilled' => false,
+                    'restaurant_id' => $restaurantId,
+                    'dish_name' => $dish -> name,
+                    'price' => $dish -> price,
+                    'discount' => $dish -> discount,
+                    'address' => $user -> address,
+                ));
+            }
+            return back();
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the ordered summary
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -71,6 +124,14 @@ class OrderController extends Controller
     public function show($id)
     {
         //
+        $user = Auth::user();
+        $isRestaurant = $user -> userType === '2';
+        if ($isRestaurant) {
+            $orders = $user-> receivedOrders() -> whereRaw('fulfilled = ? and cart_id = ?', array(true, $id)) -> get();
+        } else {
+            $orders = $user-> orders() -> whereRaw('fulfilled = ? and cart_id = ?', array(true, $id)) -> get();
+        }
+        return view('order.show') -> with('orders', $orders);
     }
 
     /**
@@ -105,5 +166,17 @@ class OrderController extends Controller
     public function destroy($id)
     {
         //
+        $user = Auth::user(); 
+        $sessionData = session('cartId');
+        if ($sessionData) {
+            foreach($sessionData as $key => $cartId) {
+                $existingOrders = $user->orders()
+                        ->where('fulfilled', false)
+                        ->where('cart_id', $cartId)
+                        ->where('dish_id', $id);
+                $existingOrders -> delete();
+            }
+        }
+        return back();
     }
 }

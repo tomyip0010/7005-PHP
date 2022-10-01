@@ -43,6 +43,9 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         //
+        $this->validate($request, [
+            'image' => 'required',
+        ]);
         $userId = Auth::id(); 
         $dishId = $request -> dishId;
         $dish = Dish::find($dishId);

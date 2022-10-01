@@ -12,9 +12,17 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="url('/')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="url('/')" :active="request()->routeIs('/')">
+                        {{ __('Home') }}
                     </x-nav-link>
+                    <x-nav-link :href="url('/restaurant')" :active="request()->routeIs('/')">
+                        {{ __('Restaurants') }}
+                    </x-nav-link>
+                    @if (Auth::check())
+                        <x-nav-link :href="url('/order')" :active="request()->routeIs('/order/*')">
+                            {{ __('Orders') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -25,7 +33,11 @@
                     <x-slot name="trigger">
                         <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                             <div>
-                                <span class="badge bg-primary text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
+                                @if (isOwnedRestaurant(Auth::id()))
+                                    <span class="badge bg-danger text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
+                                @else
+                                    <span class="badge bg-primary text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
+                                @endif
                                 <span>{{ Auth::user()->name }}</span>
                             </div>
 

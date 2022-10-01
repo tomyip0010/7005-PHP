@@ -3,30 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Dish;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
+use Carbon\Carbon;
 
-class CustomerController extends Controller
+class HomeController extends Controller
 {
-    public function __construct() {
-        $this->middleware('auth', ['except'=>['index', 'show']]);
-        // $this->middleware('restaurant', ['except'=>['index', 'show']]);
-    }
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function cart()
-    {
-        //
-        $user = Auth::user();
-        $orders = $user -> orderedDishes();
-        return view('customer.cart');
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -35,6 +17,15 @@ class CustomerController extends Controller
     public function index()
     {
         //
+        $orders = Order::where('created_at', '>', now()->subDays(30)->endOfDay())
+            ->where('fulfilled', true)
+            ->groupBy('dish_id')
+            ->selectRaw('count(orders.dish_id) as dishOrderCount, orders.dish_id')
+            ->orderBy('dishOrderCount', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('home')->with('top5Orders', $orders);
     }
 
     /**

@@ -20,7 +20,12 @@ return new class extends Migration
             $table->integer('dish_id');
             $table->integer('cart_id');
             $table->integer('quantity');
+            $table->string('dish_name');
+            $table->integer('price');
+            $table->integer('address');
+            $table->integer('discount')->nullable();
             $table->boolean('fulfilled')->default(0);
+            $table->date('order_date')->nullable();
             $table->timestamps();
         });
     }

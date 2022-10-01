@@ -11,7 +11,7 @@
         </a>
     @endif
 	<div class="flex gap-2 my-4">
-		<div class="flex flex-col gap-2">
+		<div class="flex flex-col gap-2 w-full">
 			@forelse($dishes as $dish)
 				<div class="flex flex-row items-center bg-white rounded-lg border shadow-md">
 					<div class="w-75 flex flex-col justify-between p-4 leading-normal">
@@ -61,7 +61,7 @@
 									</form>
 								</div>
 							</div>
-						@elseif (Auth::check())
+						@elseif (Auth::check() && Auth::user() -> userType === '3')
 							<form method="POST" action='{{url("order")}}' class="h-[180px] flex flex-col justify-between py-4">
 								{{csrf_field()}}
 								<div class="custom-number-input h-10 w-32">
@@ -86,8 +86,8 @@
 				<div>Empty</div>
 			@endforelse
 		</div>
-		@if ($orders)
-			<div class="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-1/2 bg-white rounded-lg border shadow-md">
+		@if ($orders && $orders -> count() > 0)
+			<div class="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-1/2 max-w-[350px] bg-white rounded-lg border shadow-md">
 				<h3 class="text-xl font-semibold leading-5 text-gray-800">Order Summary</h3>
 				<div class="flex justify-center items-center w-full space-y-4 mt-4 flex-col border-gray-200 border-b pb-4">
 					@foreach ($orders as $order)
@@ -98,14 +98,30 @@
 									<span class="p-1 text-xs font-medium bg-white leading-3 text-gray-400">{{$order -> discount }}% OFF</span>
 								@endif
 							</p>
-							<p class="text-base leading-4 text-gray-600">${{ getFinalDishPrice($order) }}</p>
+							<div class="flex gap-2 items-center w-1/2 justify-end">
+								<form method="POST" action='{{url("order/$order->id")}}'>
+									{{csrf_field()}}
+									{{ method_field('DELETE') }}
+									<button type="submit" class="text-red-400 rounded-full p-2 hover:bg-red-400 hover:text-white">
+										<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+									</button>
+									<!-- <input type="submit" value="" class="text-red-400 rounded-full p-2 hover:bg-red-400 hover:text-white"> -->
+								</form>
+								<p class="text-base leading-4 text-gray-600">$ {{ getFinalDishPrice($order) }}</p>
+							</div>
 						</div>
 					@endforeach
 				</div>
-				<div class="flex justify-between items-center w-full">
-					<p class="text-base font-semibold leading-4 text-gray-800 mt-4">Total</p>
-					<p class="text-base font-semibold leading-4 text-gray-600">{{ getOrderSum($orders) }}</p>
+				<div class="flex justify-between items-center w-full mt-4">
+					<p class="text-base font-semibold leading-4 text-gray-800">Total</p>
+					<p class="text-base font-semibold leading-4 text-gray-600">$ {{ getOrderSum($orders) }}</p>
 				</div>
+				<form method="POST" action='{{url("order")}}' class="h-[180px] flex flex-col justify-between py-4">
+					{{csrf_field()}}
+					<input type="hidden" name="placeOrder" value="true">
+					<input type="hidden" name="restaurantId" value="{{$restaurant -> id}}">
+					<input type="submit" value="Place Order Now" class="bg-red-400 text-white font-bold py-2 px-4 rounded"">
+				</form>
 			</div>
 		@endif
 	</div>

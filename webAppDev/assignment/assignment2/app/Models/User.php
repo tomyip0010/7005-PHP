@@ -48,11 +48,19 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Dish', 'restaurant_id', 'id');
     }
 
+    function orders() {
+        return $this->hasMany('App\Models\Order', 'customer_id', 'id');
+    }
+
+    function receivedOrders() {
+        return $this->hasMany('App\Models\Order', 'restaurant_id', 'id');
+    }
+
     function orderedDishes() {
-        return $this->belongsToMany('App\Models\Dish', 'orders', 'customer_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'restaurant_id')->withTimestamps();
+        return $this->belongsToMany('App\Models\Dish', 'orders', 'customer_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'restaurant_id', 'order_date', 'dish_name', 'price', 'discount', 'address')->withTimestamps();
     }
 
     function receivedDishes() {
-        return $this->belongsToMany('App\Models\Dish', 'orders', 'restaurant_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'customer_id')->withTimestamps();
+        return $this->belongsToMany('App\Models\Dish', 'orders', 'restaurant_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'customer_id', 'order_date', 'dish_name', 'price', 'discount', 'address')->withTimestamps();
     }
 }

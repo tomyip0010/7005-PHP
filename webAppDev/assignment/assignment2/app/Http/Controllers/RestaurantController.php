@@ -22,7 +22,7 @@ class RestaurantController extends Controller
         //
         $items_per_page = 1; 
         $restaurants = User::where('userType', '2')->paginate($items_per_page);
-        return view('dashboard')->with('restaurants', $restaurants);
+        return view('restaurant.index')->with('restaurants', $restaurants);
     }
 
     /**
@@ -59,10 +59,14 @@ class RestaurantController extends Controller
         $restaurant = User::find($id);
         $dishes = $restaurant->dishes()->paginate($items_per_page);
         $orders = NULL;
-        $cartId = session('cartId');
-        if (Auth::check() && $cartId) {
-            $user = Auth::user();
-            $orders = $user -> orderedDishes() -> whereRaw('fulfilled = ? and cart_id = ?', array(false, $cartId)) -> get();
+        $sessionData = session('cartId');
+        // dd($sessionData);
+        if (Auth::check() && $sessionData && array_key_exists('res'.$restaurant -> id, $sessionData)) {
+            $cartId = $sessionData['res'.$restaurant -> id];
+            if ($cartId) {
+                $user = Auth::user();
+                $orders = $user -> orderedDishes() -> whereRaw('fulfilled = ? and cart_id = ?', array(false, $cartId)) -> get();
+            }
         }
         // dd($orders);
         return view('restaurant.show')->with('restaurant', $restaurant)->with('dishes', $dishes)->with('orders', $orders);

@@ -5,6 +5,7 @@ use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,7 +17,7 @@ use App\Http\Controllers\OrderController;
 |
 */
 
-Route::get('/', [RestaurantController::class, 'index']);
+Route::get('/', [HomeController::class, 'index']);
 
 Route::resource('restaurant', RestaurantController::class);
 Route::resource('dish', DishController::class);

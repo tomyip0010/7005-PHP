@@ -32,7 +32,10 @@
                         </label>
                     </div>
                 </div>
-                <div class="flex p-2 space-x-4">
+                @if ($errors->first('image'))
+                    <span class="text-danger font-bold ml-6">{{$errors->first('image')}}</span>
+                @endif
+                <div class="flex p-2 space-x-4 ml-4">
                     <button class="px-4 py-2 text-white bg-green-500 rounded shadow-xl">Upload</button>
                 </div>
             </div>

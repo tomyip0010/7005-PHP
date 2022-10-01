@@ -43,6 +43,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
+        $user = Auth::user(); 
+        $sessionData = session('cartId');
+        if ($sessionData) {
+            foreach($sessionData as $key => $cartId) {
+                $existingOrders = $user -> orders()
+                        ->where('fulfilled', false)
+                        ->where('cart_id', $cartId);
+                $existingOrders -> delete();
+            }
+        }
+    
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

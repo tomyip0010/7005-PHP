@@ -16,4 +16,8 @@ class Dish extends Model
     function images() {
         return $this->hasMany('App\Models\Image', 'dish_id', 'id');
     }
+
+    function orders() {
+        return $this->hasMany('App\Models\Order', 'dish_id', 'id');
+    }
 }
