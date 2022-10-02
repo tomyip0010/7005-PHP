@@ -1,3 +1,6 @@
+<?php
+    $userTypeOptions = ["2" => 'Restaurant', "3" => 'Customer'];
+?>
 <x-guest-layout>
     <x-auth-card>
         <x-slot name="logo">
@@ -44,14 +47,16 @@
             <!-- User Type -->
             <div class="mt-4">
                 <x-input-label :value="__('User Type')" />
+                @foreach ($userTypeOptions as $key => $label)
                 <span>
-                    <input type="radio" name="userType" value="2">
-                    <label for="2">Restaurant</label>
+                    @if (old('userType') == $key)
+                        <input type="radio" name="userType" value="{{$key}}" checked="true">
+                    @else
+                        <input type="radio" name="userType" value="{{$key}}">
+                    @endif
+                    <label for="{{$key}}">{{ $label }}</label>
                 </span>
-                <span class="ml-2">
-                    <input type="radio" name="userType" value="3">
-                    <label for="3">Customer</label><br>
-                </span>
+                @endforeach
             </div>
 
             <!-- Address -->

@@ -6,6 +6,8 @@ use App\Http\Controllers\DishController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FavouriteController;
+use App\Http\Controllers\AdminController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,10 +20,13 @@ use App\Http\Controllers\HomeController;
 */
 
 Route::get('/', [HomeController::class, 'index']);
+Route::post('/approve', [AdminController::class, 'approve']);
 
 Route::resource('restaurant', RestaurantController::class);
 Route::resource('dish', DishController::class);
 Route::resource('image', ImageController::class);
 Route::resource('order', OrderController::class);
+Route::resource('favourite', FavouriteController::class);
+Route::resource('admin', AdminController::class);
 
 require __DIR__.'/auth.php';

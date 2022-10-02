@@ -47,8 +47,9 @@ if (!function_exists('isOwnedRestaurant')) {
         if (Auth::check()) {
             $restaurant = User::find($restaurantId);
             $userType = Auth::user()->userType;
+            $approved = Auth::user()->approved;
             $userId = Auth::user()->id;
-            if ($userType === '2' && $userId == $restaurant -> id) {
+            if ($userType === '2' && $userId == $restaurant -> id && $approved) {
                 return true;
             } else {
                 return false;

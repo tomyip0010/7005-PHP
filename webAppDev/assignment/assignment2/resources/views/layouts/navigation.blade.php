@@ -15,13 +15,30 @@
                     <x-nav-link :href="url('/')" :active="request()->routeIs('/')">
                         {{ __('Home') }}
                     </x-nav-link>
+                    @if (getUserTypeLabel() === 'restaurant')
+                        <x-nav-link :href="url('/restaurant/'.Auth::id())" :active="request()->routeIs('/favourite*')">
+                            {{ __('My Store') }}
+                        </x-nav-link>
+                    @endif
+                    @if (getUserTypeLabel() === 'admin')
+                        <x-nav-link :href="url('/admin')" :active="request()->routeIs('/favourite*')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endif
                     <x-nav-link :href="url('/restaurant')" :active="request()->routeIs('/')">
                         {{ __('Restaurants') }}
                     </x-nav-link>
                     @if (Auth::check())
-                        <x-nav-link :href="url('/order')" :active="request()->routeIs('/order/*')">
-                            {{ __('Orders') }}
-                        </x-nav-link>
+                        @if (getUserTypeLabel() !== 'admin')
+                            <x-nav-link :href="url('/order')" :active="request()->routeIs('/order/*')">
+                                {{ __('Orders') }}
+                            </x-nav-link>
+                        @endif
+                        @if (getUserTypeLabel() === 'customer')
+                            <x-nav-link :href="url('/favourite')" :active="request()->routeIs('/favourite*')">
+                                {{ __('Favourite') }}
+                            </x-nav-link>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -34,9 +51,13 @@
                         <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                             <div>
                                 @if (isOwnedRestaurant(Auth::id()))
-                                    <span class="badge bg-danger text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
-                                @else
-                                    <span class="badge bg-primary text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
+                                    <span class="badge bg-cyan-400 text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
+                                @elseif (getUserTypeLabel() === 'restaurant')
+                                    <span class="badge bg-gray-400 text-capitalize mr-2">{{ getUserTypeLabel() }} - Pending Approval</span>
+                                @elseif (getUserTypeLabel() === 'customer')
+                                    <span class="badge bg-green-400 text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
+                                @elseif (getUserTypeLabel() === 'admin')
+                                    <span class="badge bg-red-400 text-capitalize mr-2">{{ getUserTypeLabel() }}</span>
                                 @endif
                                 <span>{{ Auth::user()->name }}</span>
                             </div>

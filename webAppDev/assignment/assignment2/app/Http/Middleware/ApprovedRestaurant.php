@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Admin
+class ApprovedRestaurant
 {
     /**
      * Handle an incoming request.
@@ -16,9 +16,7 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = $request->user();
-
-        if (! $user || $user->userType !== '1') {
+        if (! $user || $user->userType !== '2' || !($user -> approved)) {
             abort(403);
             return redirect('login');
         }

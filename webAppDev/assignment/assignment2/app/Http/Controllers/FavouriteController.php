@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Dish;
+use Illuminate\Support\Facades\Auth;
 
 class FavouriteController extends Controller
 {
+    public function __construct() {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,6 +20,9 @@ class FavouriteController extends Controller
     public function index()
     {
         //
+        $user = Auth::user();
+        $favDishes = $user -> favouritedDishes;
+        return view('favourite.index')->with('favDishes', $favDishes);
     }
 
     /**
@@ -35,6 +44,13 @@ class FavouriteController extends Controller
     public function store(Request $request)
     {
         //
+        $this->validate($request, [
+            'dishId' => 'exists:dishes,id',
+        ]);
+        $user = Auth::user();
+        $dishId = $request -> dishId;
+        $user -> favouritedDishes() -> attach($dishId);
+        return back();
     }
 
     /**
@@ -77,8 +93,11 @@ class FavouriteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($dishId)
     {
         //
+        $user = Auth::user();
+        $user -> favouritedDishes() -> detach($dishId);
+        return back();
     }
 }

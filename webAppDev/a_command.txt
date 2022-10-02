@@ -19,4 +19,4 @@ php artisan make:model Product
 
 php artisan make:controller ProductController --resource
 
-php artisan make:middleware EnsureTokenIsValid
+php artisan make:middleware ApprovedRestaurant

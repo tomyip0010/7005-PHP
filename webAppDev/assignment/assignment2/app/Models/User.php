@@ -63,4 +63,8 @@ class User extends Authenticatable
     function receivedDishes() {
         return $this->belongsToMany('App\Models\Dish', 'orders', 'restaurant_id', 'dish_id')->withPivot('quantity', 'fulfilled', 'cart_id', 'customer_id', 'order_date', 'dish_name', 'price', 'discount', 'address')->withTimestamps();
     }
+    
+    function favouritedDishes() {
+        return $this->belongsToMany('App\Models\Dish', 'favourites', 'customer_id', 'dish_id');
+    }
 }

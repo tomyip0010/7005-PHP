@@ -9,7 +9,7 @@
         <div class="flex justify-center items-center w-full space-y-4 mt-4 flex-col border-gray-200 border-b pb-4">
             @foreach ($orders -> groupby('cart_id') as $orderId => $order)
                 <h3 class="text-xl font-semibold leading-5 text-gray-800">Order Summary # {{ $orderId }}</h3>
-                @if (isOwnedRestaurant(Auth::id()))
+                @if (isRestaurant())
                     <div class="flex justify-between items-center w-full text-gray-900 font-bold">
                         <p class="text-base leading-4">Customer Name: </p>
                         <p class="text-base leading-4">{{$order[0] -> orderedBy() -> get()[0] -> name}}</p>

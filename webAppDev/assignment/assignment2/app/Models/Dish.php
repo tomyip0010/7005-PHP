@@ -20,4 +20,8 @@ class Dish extends Model
     function orders() {
         return $this->hasMany('App\Models\Order', 'dish_id', 'id');
     }
+
+    function favouritedBy() {
+        return $this->belongsToMany('App\Models\User', 'favourites', 'dish_id', 'customer_id');
+    }
 }

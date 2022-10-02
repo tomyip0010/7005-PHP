@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Dish;
 use Illuminate\Support\Facades\Auth;
 
-class RestaurantController extends Controller
+class AdminController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth', ['except'=>['index', 'show']]);
-        $this->middleware('approvedRestaurant', ['except'=>['index', 'show']]);
+        $this->middleware('auth');
+        $this->middleware('admin');
     }
     /**
      * Display a listing of the resource.
@@ -21,10 +20,29 @@ class RestaurantController extends Controller
     public function index()
     {
         //
-        $items_per_page = 2; 
-        $restaurants = User::where('userType', '2')->paginate($items_per_page);
-        return view('restaurant.index')->with('restaurants', $restaurants);
+        $unapprovedRestaurants = User::where('approved', false)->where('userType', '2')->get();
+        return view('admin.index')->with('unapprovedRestaurants', $unapprovedRestaurants);
     }
+
+    /**
+     * Approve a new register restaurant.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function approve(Request $request)
+    {
+        //
+        $this->validate($request, [
+            'restaurantId' => 'exists:users,id',
+        ]);
+        $restaurantId = $request -> restaurantId;
+        $restaurant = User::find($restaurantId);
+        $restaurant -> approved = true;
+        $restaurant -> update();
+        return back();
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -56,21 +74,6 @@ class RestaurantController extends Controller
     public function show($id)
     {
         //
-        $items_per_page = 5; 
-        $restaurant = User::find($id);
-        $dishes = $restaurant->dishes()->paginate($items_per_page);
-        $orders = NULL;
-        $sessionData = session('cartId');
-        // dd($sessionData);
-        if (Auth::check() && $sessionData && array_key_exists('res'.$restaurant -> id, $sessionData)) {
-            $cartId = $sessionData['res'.$restaurant -> id];
-            if ($cartId) {
-                $user = Auth::user();
-                $orders = $user -> orderedDishes() -> whereRaw('fulfilled = ? and cart_id = ?', array(false, $cartId)) -> get();
-            }
-        }
-        // dd($orders);
-        return view('restaurant.show')->with('restaurant', $restaurant)->with('dishes', $dishes)->with('orders', $orders);
     }
 
     /**

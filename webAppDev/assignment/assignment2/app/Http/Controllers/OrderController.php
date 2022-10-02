@@ -26,9 +26,9 @@ class OrderController extends Controller
         $user = Auth::user();
         $isRestaurant = $user -> userType === '2';
         if ($isRestaurant) {
-            $orders = $user-> receivedOrders() -> where('fulfilled', true) -> orderby('cart_id') -> get();
+            $orders = $user-> receivedOrders() -> where('fulfilled', true) -> orderby('cart_id', 'desc') -> get();
         } else {
-            $orders = $user-> orders() -> where('fulfilled', true) -> orderby('cart_id') -> get();
+            $orders = $user-> orders() -> where('fulfilled', true) -> orderby('cart_id', 'desc') -> get();
         }
         // dd($user -> userType, $isRestaurant, $orders);
         return view('order.index')->with('orders', $orders);
@@ -42,8 +42,6 @@ class OrderController extends Controller
     public function create()
     {
         //
-        $userId = Auth::id(); 
-        $dishId = $request -> dishId;
     }
 
     /**
@@ -59,9 +57,14 @@ class OrderController extends Controller
         if ($placeOrder) {
             $restaurantId = $request -> restaurantId;
         } else {
+            $this->validate($request, [
+                'dishId' => 'exists:dishes,id',
+                'quantity' => 'required|numeric|min:1'
+            ]);
             $dishId = $request -> dishId;
             $dish = Dish::find($dishId);
             $restaurantId = $dish -> restaurant_id;
+            $quantity = $request -> quantity;
         }
 
         $sessionData = $request -> session() -> get('cartId');
@@ -92,7 +95,6 @@ class OrderController extends Controller
             $request -> session() -> forget('cartId');
             return redirect("order/$cartId");
         } else {
-            $quantity = $request -> quantity;
             $existingOrders = $user->orders()
                 ->where('fulfilled', false)
                 ->where('cart_id', $cartId)
