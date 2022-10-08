@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Dish;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
 class FavouriteController extends Controller
@@ -13,7 +14,7 @@ class FavouriteController extends Controller
         $this->middleware('auth');
     }
     /**
-     * Display a listing of the resource.
+     * Display a listing of the recommended favourite
      *
      * @return \Illuminate\Http\Response
      */
@@ -22,7 +23,32 @@ class FavouriteController extends Controller
         //
         $user = Auth::user();
         $favDishes = $user -> favouritedDishes;
-        return view('favourite.index')->with('favDishes', $favDishes);
+
+        $recommend = NULL;
+        if (count($favDishes) >=5) {
+            foreach ($favDishes as $favDish) {
+                $favDishesIDs[] = $favDish -> id;
+            }
+            // Get orders includes the most favourited dishes
+            $orders = Order::whereIn('dish_id', $favDishesIDs)
+                -> selectRaw('*, count("cart_id")')
+                -> groupBy('cart_id')
+                -> orderBy('cart_id', 'desc') -> get();
+
+            foreach ($orders as $order) {
+                $orderId = $order -> cart_id;
+                $orderedDishes = Order::where('cart_id', $orderId) -> whereNotIn('dish_id', $favDishesIDs) -> get();
+                $numOfDishes = count($orderedDishes);
+                if ($numOfDishes > 0) {
+                    $randNum = rand(0, $numOfDishes - 1);
+                    $recommendDishId = $orderedDishes[$randNum] -> dish_id;
+                    $recommend = Dish::find($recommendDishId);
+                    // dd($recommend);
+                }
+            }
+        }
+
+        return view('favourite.index')->with('favDishes', $favDishes)->with('dish', $recommend);
     }
 
     /**

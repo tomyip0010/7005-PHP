@@ -29,4 +29,9 @@ Route::resource('order', OrderController::class);
 Route::resource('favourite', FavouriteController::class);
 Route::resource('admin', AdminController::class);
 
+/** Assignmnet Requirement Docs Routes */
+Route::get('requirement', function () {
+  return view('document/detail');
+});
+
 require __DIR__.'/auth.php';

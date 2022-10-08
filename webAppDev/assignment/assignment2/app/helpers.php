@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Dish;
 use App\Models\User;
 
+
+/** Retreive the user type label by userType */
 if (!function_exists('getUserTypeLabel')) {
     function getUserTypeLabel()
     {
@@ -24,6 +26,7 @@ if (!function_exists('getUserTypeLabel')) {
      }
 }
 
+/** Check if the current user is a restaurant */
 if (!function_exists('isRestaurant')) {
     function isRestaurant()
     {
@@ -41,6 +44,7 @@ if (!function_exists('isRestaurant')) {
      }
 }
 
+/** check if the current user owned the restaurant */
 if (!function_exists('isOwnedRestaurant')) {
     function isOwnedRestaurant($restaurantId)
     {
@@ -60,6 +64,7 @@ if (!function_exists('isOwnedRestaurant')) {
      }
 }
 
+/** check if the restaurant owned the dish */
 if (!function_exists('isOwnedDish')) {
     function isOwnedDish($dishId)
     {
@@ -78,6 +83,7 @@ if (!function_exists('isOwnedDish')) {
      }
 }
 
+/** get the dish price with discount */
 if (!function_exists('getFinalDishPrice')) {
     function getFinalDishPrice($item, $isPivot = true)
     {
@@ -96,6 +102,8 @@ if (!function_exists('getFinalDishPrice')) {
      }
 }
 
+
+/** get the total price of an order */
 if (!function_exists('getOrderSum')) {
     function getOrderSum($orders, $isPivot = true)
     {

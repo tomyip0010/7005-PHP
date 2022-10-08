@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class ApprovedRestaurant
 {
     /**
-     * Handle an incoming request.
+     * Handle an incoming request and check if the user is an approved restaurant.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next

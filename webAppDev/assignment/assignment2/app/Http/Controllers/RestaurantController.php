@@ -61,7 +61,6 @@ class RestaurantController extends Controller
         $dishes = $restaurant->dishes()->paginate($items_per_page);
         $orders = NULL;
         $sessionData = session('cartId');
-        // dd($sessionData);
         if (Auth::check() && $sessionData && array_key_exists('res'.$restaurant -> id, $sessionData)) {
             $cartId = $sessionData['res'.$restaurant -> id];
             if ($cartId) {
@@ -69,7 +68,6 @@ class RestaurantController extends Controller
                 $orders = $user -> orderedDishes() -> whereRaw('fulfilled = ? and cart_id = ?', array(false, $cartId)) -> get();
             }
         }
-        // dd($orders);
         return view('restaurant.show')->with('restaurant', $restaurant)->with('dishes', $dishes)->with('orders', $orders);
     }
 

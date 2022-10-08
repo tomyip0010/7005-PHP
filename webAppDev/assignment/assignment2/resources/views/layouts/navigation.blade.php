@@ -40,6 +40,9 @@
                             </x-nav-link>
                         @endif
                     @endif
+                    <x-nav-link :href="url('/requirement')" :active="request()->routeIs('/requirement')">
+                        {{ __('Document') }}
+                    </x-nav-link>
                 </div>
             </div>
 

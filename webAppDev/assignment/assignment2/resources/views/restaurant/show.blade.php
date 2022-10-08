@@ -107,8 +107,10 @@
 									</div>
 								</div>
 								<input type="hidden" name="dishId" value="{{$dish -> id}}">
-								<input type="submit" value="Add to order" class="bg-cyan-500 text-white font-bold py-2 px-4 rounded"">
+								<input type="submit" value="Add to order" class="bg-cyan-500 text-white font-bold py-2 px-4 rounded">
 							</form>
+						@elseif (!Auth::check())
+							<a href="{{url('/login')}}" class="mt-5 border-2 border-cyan-500 text-cyan-500 font-bold py-2 px-4 rounded block h-[42px]">Login</a>
 						@endif
 					</div>
 				</div>
